@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/apps/">
+    <Project Path="apps/MaNoir.Inventory.Api/MaNoir.Inventory.Api.csproj" />
+    <Project Path="apps/MaNoir.Inventory.AdminUi/MaNoir.Inventory.AdminUi.csproj" />
+  </Folder>
+  <Folder Name="/packages/">
+    <Project Path="packages/MaNoir.Inventory.Contracts/MaNoir.Inventory.Contracts.csproj" />
+    <Project Path="packages/MaNoir.Inventory/MaNoir.Inventory.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MaNoir.Inventory.UnitTests/MaNoir.Inventory.UnitTests.csproj" />
+    <Project Path="tests/MaNoir.Inventory.FunctionalTests/MaNoir.Inventory.FunctionalTests.csproj" />
+  </Folder>
+</Solution>

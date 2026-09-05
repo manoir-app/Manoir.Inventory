@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\packages\MaNoir.Inventory.Contracts\MaNoir.Inventory.Contracts.csproj" />
+    <ProjectReference Include="..\..\packages\MaNoir.Inventory\MaNoir.Inventory.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="MaNoir.Core" Version="0.1.43" />
+  </ItemGroup>
+
+</Project>
