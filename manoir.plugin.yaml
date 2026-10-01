@@ -1,0 +1,93 @@
+apiVersion: manoir/v1
+kind: PluginManifest
+
+# This manifest is the authored source of truth. It must never be deleted.
+# It gets transformed by the external manoir-app/manoir-plugin-action into
+# Manoir.PluginCatalog/plugins/<pluginRoot>/<pluginCategory>/<pluginId>/plugin.yaml.
+
+plugin:
+  pluginRoot: Inventory
+  pluginCategory: Core
+  pluginId: inventory
+  repoUrl: https://github.com/manoir-app/Manoir.Inventory
+  displayName: Inventory
+  publisher: MaNoir
+  version: 0.1.0
+  minimumMaNoirVersion: 0.0.0
+
+catalog:
+  # This block only feeds a lightweight "announcedContributions" summary (kind + labels)
+  # in the generated catalog entry. It is NOT parsed by any .NET code. The real admin
+  # navigation contract lives in InventoryPluginDescriptorProvider.cs; keep both in sync manually.
+  accessZones:
+    - id: inventory.admin-ui
+      label:
+        en: Inventory administration
+        fr-FR: Administration de l'inventaire
+      description:
+        en: Access to the Inventory administration pages.
+        fr-FR: Acces aux pages d'administration de l'inventaire.
+  contributions:
+    - id: inventory.admin.pages
+      kind: AdminUiPage
+      label:
+        en: Inventory
+        fr-FR: Inventaire
+      description:
+        en: Inventory administration pages.
+        fr-FR: Pages d'administration de l'inventaire.
+      canCreateInstances: false
+      canInstallMultipleTimes: false
+      tags:
+        - inventory
+      adminUi:
+        domain: Inventory
+        accessZoneId: inventory.admin-ui
+        requiredAccessLevel: Read
+        pages:
+          - category: Inventory
+            name: Overview
+            relativePath: /inventory/overview
+            labels:
+              en: Overview
+              fr-FR: Vue d'ensemble
+          - category: Stock
+            name: Products
+            relativePath: /inventory/stock/products
+            labels:
+              en: Products
+              fr-FR: Produits
+          - category: Stock
+            name: LowStock
+            relativePath: /inventory/stock/low
+            labels:
+              en: Low stock and expiring
+              fr-FR: Stock bas et peremptions
+          - category: Possessions
+            name: Assets
+            relativePath: /inventory/possessions/assets
+            labels:
+              en: Assets and equipment
+              fr-FR: Biens et equipements
+          - category: Organisation
+            name: Containers
+            relativePath: /inventory/organisation/containers
+            labels:
+              en: Storage locations
+              fr-FR: Rangements
+          - category: Organisation
+            name: Categories
+            relativePath: /inventory/organisation/categories
+            labels:
+              en: Categories
+              fr-FR: Categories
+
+deployment:
+  group: inventory
+  adminUi:
+    pathPrefix: /inventory
+    service: admin-ui
+    port: 8080
+  artifacts:
+    - kind: compose
+      path: deploy/docker-compose.yml
