@@ -8,4 +8,8 @@
     <ProjectReference Include="..\MaNoir.Inventory.Api\MaNoir.Inventory.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MaNoir.Core.AdminUi.Hosting" Version="0.1.87" />
+  </ItemGroup>
+
 </Project>
