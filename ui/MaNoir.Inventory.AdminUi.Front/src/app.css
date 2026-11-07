@@ -1,0 +1,86 @@
+:root {
+  color-scheme: light;
+  font-family: var(--mn-font-sans);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.inv-admin-shell {
+  --mn-color-accent: oklch(52% 0.11 60);
+  --mn-color-accent-strong: oklch(44% 0.11 60);
+  --mn-color-accent-soft: oklch(95% 0.03 60);
+}
+
+.front-domain-shell-header {
+  border-bottom: 0;
+  padding: 0;
+  width: auto;
+}
+
+.front-auth-sidebar-nav {
+  background: transparent;
+  border-right: 0;
+  min-height: auto;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+.inv-page {
+  display: grid;
+  gap: 2.75rem;
+}
+
+.inv-summary-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.inv-summary-card,
+.inv-placeholder-card {
+  padding: 1.25rem;
+}
+
+.inv-summary-label {
+  color: var(--mn-color-ink-muted);
+  font-family: var(--mn-font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.inv-summary-value {
+  color: var(--mn-color-ink);
+  font-family: var(--mn-font-display);
+  font-size: 1.65rem;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  margin-top: 0.8rem;
+}
+
+.inv-summary-detail {
+  color: var(--mn-color-ink-soft);
+  font-size: 0.78rem;
+  margin-top: 0.35rem;
+}
+
+@media (max-width: 1100px) {
+  .inv-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .inv-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
