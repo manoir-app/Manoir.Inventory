@@ -3,6 +3,11 @@
   font-family: var(--mn-font-sans);
 }
 
+:root[data-theme='dark'],
+:root[data-theme='mirror'] {
+  color-scheme: dark;
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -12,65 +17,85 @@ body {
   min-height: 100vh;
 }
 
-.inv-admin-shell {
-  --mn-color-accent: oklch(52% 0.11 60);
-  --mn-color-accent-strong: oklch(44% 0.11 60);
-  --mn-color-accent-soft: oklch(95% 0.03 60);
+.inv-icon-action {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--mn-r-pill);
+  color: var(--mn-muted);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: var(--mn-button-h);
+  justify-content: center;
+  transition: background 160ms ease, color 160ms ease;
+  width: var(--mn-button-h);
 }
 
-.front-domain-shell-header {
-  border-bottom: 0;
-  padding: 0;
-  width: auto;
+.inv-icon-action:hover {
+  background: var(--mn-tonal);
+  color: var(--mn-ink);
 }
 
-.front-auth-sidebar-nav {
+.inv-icon-action:focus-visible {
+  box-shadow: 0 0 0 2px var(--mn-ink);
+  outline: none;
+}
+
+.inv-icon-action svg {
+  display: block;
+  height: 1.375rem;
+  width: 1.375rem;
+}
+
+.inv-sidebar-nav {
   background: transparent;
   border-right: 0;
-  min-height: auto;
+  height: 100%;
   max-width: 100%;
+  min-height: auto;
   overflow-x: hidden;
   padding: 0;
   width: 100%;
 }
 
+.inv-section-tabs {
+  margin-bottom: var(--mn-s-6);
+}
+
 .inv-page {
   display: grid;
-  gap: 2.75rem;
+  gap: var(--mn-s-6);
 }
 
 .inv-summary-grid {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--mn-s-3);
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.inv-summary-card,
-.inv-placeholder-card {
-  padding: 1.25rem;
+.inv-summary-card {
+  padding: var(--mn-s-6);
 }
 
 .inv-summary-label {
-  color: var(--mn-color-ink-muted);
-  font-family: var(--mn-font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  color: var(--mn-muted);
+  font-weight: 300;
 }
 
 .inv-summary-value {
-  color: var(--mn-color-ink);
   font-family: var(--mn-font-display);
-  font-size: 1.65rem;
+  font-size: 2.25rem;
   font-weight: 500;
-  letter-spacing: -0.04em;
-  margin-top: 0.8rem;
+  letter-spacing: -0.03em;
+  margin-top: var(--mn-s-2);
 }
 
 .inv-summary-detail {
-  color: var(--mn-color-ink-soft);
-  font-size: 0.78rem;
-  margin-top: 0.35rem;
+  color: var(--mn-muted);
+  font-size: 0.875rem;
+  font-weight: 300;
+  margin-top: var(--mn-s-1);
 }
 
 @media (max-width: 1100px) {

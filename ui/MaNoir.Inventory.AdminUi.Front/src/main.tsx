@@ -5,15 +5,16 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from
 import {
   Card,
   DefaultAdminShell,
+  InlineTabs,
   PageHeader,
   SidebarNav,
-  ShellHeader,
-  StatusDot,
+  StatusPill,
 } from '@manoir-app/core-admin-ui-kit';
 import { checkInventoryHealth, getInventoryCounts, type InventoryCounts } from './api';
 import { getRouterBasePath } from './runtimeConfig';
+import { Icon, MoonIcon, SunIcon, type IconKind } from './icons';
+import { useShellPreferences } from './shellPreferences';
 import '@manoir-app/core-admin-ui-kit/styles.css';
-import manoirLogo from './assets/logo.svg';
 import './app.css';
 
 type PageId = 'overview' | 'products' | 'lowStock' | 'assets' | 'containers' | 'categories';
@@ -29,31 +30,13 @@ const pages: Record<PageId, { path: string; title: string; description: string }
   categories: { path: '/organisation/categories', title: 'Catégories', description: 'La gestion des catégories sera bientôt disponible ici.' },
 };
 
-const sections: { id: string; title: string; items: PageId[] }[] = [
-  { id: 'inventory', title: 'Inventaire', items: ['overview'] },
-  { id: 'stock', title: 'Stock', items: ['products', 'lowStock'] },
-  { id: 'possessions', title: 'Possessions', items: ['assets'] },
-  { id: 'organisation', title: 'Organisation', items: ['containers', 'categories'] },
+// One rail entry per section; the pages of the active section become pill tabs above the content.
+const sections: { id: string; title: string; icon: IconKind; pages: PageId[] }[] = [
+  { id: 'inventory', title: 'Inventaire', icon: 'grid', pages: ['overview'] },
+  { id: 'stock', title: 'Stock', icon: 'package', pages: ['products', 'lowStock'] },
+  { id: 'possessions', title: 'Possessions', icon: 'tag', pages: ['assets'] },
+  { id: 'organisation', title: 'Organisation', icon: 'layers', pages: ['containers', 'categories'] },
 ];
-
-function createNavigationSections(activePath: string, navigate: ReturnType<typeof useNavigate>) {
-  const navigateInternally = (path: string) => (event: React.MouseEvent<HTMLElement>) => {
-    event.preventDefault();
-    navigate(path);
-  };
-
-  return sections.map((section) => ({
-    id: section.id,
-    title: section.title,
-    items: section.items.map((id) => ({
-      id,
-      label: pages[id].title,
-      href: pages[id].path,
-      active: activePath === pages[id].path,
-      onClick: navigateInternally(pages[id].path),
-    })),
-  }));
-}
 
 function SummaryCard({ detail, label, value }: { detail: string; label: string; value: string }) {
   return (
@@ -88,17 +71,17 @@ function OverviewPage() {
     return () => controller.abort();
   }, []);
 
-  const apiStatusLabel = apiState === 'checking' ? 'Vérification...' : apiState === 'online' ? 'En ligne' : 'Hors ligne';
-  const apiStatusTone = apiState === 'online' ? 'success' : apiState === 'offline' ? 'danger' : 'warning';
+  const apiStatusLabel = apiState === 'checking' ? 'Vérification…' : apiState === 'online' ? 'En ligne' : 'Hors ligne';
+  const apiStatusTone = apiState === 'online' ? 'success' : apiState === 'offline' ? 'danger' : 'neutral';
   const display = (value: number | undefined) => (value === undefined ? '—' : String(value));
 
   return (
     <div className="inv-page">
       <PageHeader
-        actions={<StatusDot label={apiStatusLabel} tone={apiStatusTone} />}
+        actions={<StatusPill tone={apiStatusTone}>{apiStatusLabel}</StatusPill>}
         description={pages.overview.description}
-        eyebrow="Inventaire"
-        title={pages.overview.title}
+        title="Inventaire"
+        variant="page"
       />
 
       <section className="inv-summary-grid" aria-label="Synthèse de l'inventaire">
@@ -114,11 +97,7 @@ function OverviewPage() {
 function PlaceholderPage({ page }: { page: (typeof pages)[PageId] }) {
   return (
     <div className="inv-page">
-      <PageHeader description={page.description} eyebrow="En préparation" title={page.title} variant="page" />
-      <Card className="inv-placeholder-card">
-        <div className="inv-summary-label">Bientôt disponible</div>
-        <p>Cette page est prête pour accueillir ses premiers contrôles.</p>
-      </Card>
+      <PageHeader description={page.description} title={page.title} variant="page" />
     </div>
   );
 }
@@ -126,7 +105,28 @@ function PlaceholderPage({ page }: { page: (typeof pages)[PageId] }) {
 function RoutedApp() {
   const location = useLocation();
   const navigate = useNavigate();
-  const navigationSections = createNavigationSections(location.pathname, navigate);
+  const { theme, setTheme, sidebarCollapsed, setSidebarCollapsed } = useShellPreferences();
+
+  const navigateInternally = (path: string) => (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    navigate(path);
+  };
+
+  const activeSection = sections.find((section) => section.pages.some((id) => pages[id].path === location.pathname));
+  const sidebarSections = [{
+    id: 'sections',
+    items: sections.map((section) => {
+      const firstPath = pages[section.pages[0]].path;
+      return {
+        id: section.id,
+        label: section.title,
+        icon: <Icon kind={section.icon} />,
+        active: section.id === activeSection?.id,
+        href: firstPath,
+        onClick: navigateInternally(firstPath),
+      };
+    }),
+  }];
 
   return (
     <DefaultAdminShell
@@ -136,28 +136,55 @@ function RoutedApp() {
       navigationAriaLabel="Navigation principale"
       navigationItems={[]}
       onLogout={() => undefined}
+      onSidebarCollapsedChange={setSidebarCollapsed}
       serverLabel="Serveur courant"
       serverMeta="MaNoir 0.1.0"
       serverName="Espace principal"
       serverStatus="En ligne"
       serverStatusTone="success"
       sidebarBrand="MaNoir"
+      sidebarCollapsed={sidebarCollapsed}
       sidebarEyebrow="Espace authentifié"
-      sidebarNavigation={<SidebarNav aria-label="Navigation principale" className="front-auth-sidebar-nav" sections={navigationSections} />}
+      sidebarFooterActions={(
+        <button
+          aria-label="Changer de thème"
+          className="inv-icon-action"
+          onClick={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
+          title="Changer de thème"
+          type="button"
+        >
+          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+        </button>
+      )}
+      sidebarNavigation={<SidebarNav aria-label="Navigation principale" className="inv-sidebar-nav" collapsed={sidebarCollapsed} sections={sidebarSections} />}
+      sidebarToggleLabel="Réduire ou agrandir le menu"
       topBarBrand="MaNoir"
-      topBarLogo={<img alt="Logo MaNoir" src={manoirLogo} />}
-      topBarNavigation={<ShellHeader aria-label="Contexte inventaire" className="front-domain-shell-header" compactBreakpoint={760} items={[{ id: 'inventory', label: 'Inventaire', active: true }]} />}
+      topBarLogo="M"
       userLabel="Administrateur"
       userValue="Michael"
     >
+      {activeSection && activeSection.pages.length > 1 ? (
+        <div className="inv-section-tabs">
+          <InlineTabs
+            aria-label={activeSection.title}
+            items={activeSection.pages.map((id) => ({
+              id,
+              label: pages[id].title,
+              href: pages[id].path,
+              onSelect: () => navigate(pages[id].path),
+            }))}
+            onValueChange={() => {}}
+            value={activeSection.pages.find((id) => pages[id].path === location.pathname) ?? ''}
+            variant="pill"
+          />
+        </div>
+      ) : null}
       <Routes>
         <Route element={<Navigate replace to={pages.overview.path} />} path="/" />
         <Route element={<OverviewPage />} path={pages.overview.path} />
-        <Route element={<PlaceholderPage page={pages.products} />} path={pages.products.path} />
-        <Route element={<PlaceholderPage page={pages.lowStock} />} path={pages.lowStock.path} />
-        <Route element={<PlaceholderPage page={pages.assets} />} path={pages.assets.path} />
-        <Route element={<PlaceholderPage page={pages.containers} />} path={pages.containers.path} />
-        <Route element={<PlaceholderPage page={pages.categories} />} path={pages.categories.path} />
+        {(Object.keys(pages) as PageId[]).filter((id) => id !== 'overview').map((id) => (
+          <Route element={<PlaceholderPage page={pages[id]} />} key={id} path={pages[id].path} />
+        ))}
         <Route element={<Navigate replace to={pages.overview.path} />} path="*" />
       </Routes>
     </DefaultAdminShell>
